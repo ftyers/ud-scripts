@@ -28,7 +28,7 @@ for line in sys.stdin.readlines(): #{
 				msd = msd.strip('|');
 			#}
 			print('%d\t%s\t%s\t_\t%s\t%s' % (toknum, ord, lem, pos, msd));
-			print(toknum, buffer, file=sys.stderr);
+#			print(toknum, buffer, file=sys.stderr);
 		#}
 		toknum = 0;
 		buffer = '';
@@ -53,7 +53,7 @@ for line in sys.stdin.readlines(): #{
 				msd = msd.strip('|');
 			#}
 			print('%d\t%s\t%s\t_\t%s\t%s' % (toknum, ord, lem, pos, msd));
-			print(toknum, buffer, file=sys.stderr);
+#			print(toknum, buffer, file=sys.stderr);
 		#}
 		buffer = '';
 		buffer = buffer + line;
