@@ -12,3 +12,8 @@ Convert VISL-CG3 output to ConLL-X format.
 *conllu-to-tikzdep.py:*
 
 Convert CoNLL-U to TiKZdependency graphs. One file per input sentence.
+
+*conllu-universalise-postags.py:*
+
+Replace the fourth column of CoNLL-U format with universal POS tags based on Apertium
+POS tags.
