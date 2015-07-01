@@ -12,8 +12,8 @@ for line in sys.stdin.readlines(): #{
 		if buffer != '': #{
 #			toknum = toknum + 1;
 			buffer = buffer.split('\n');
-			ord = rword.findall(buffer[0])[0];
-			lem = rbase.findall(buffer[1])[0];
+			ord = rword.findall(buffer[0])[0].replace(' ', '·');
+			lem = rbase.findall(buffer[1])[0].replace(' ', '·');
 			categs = rcateg.findall(buffer[1]);
 			pos = '_'
 			if len(categs) > 0: #{
@@ -37,8 +37,8 @@ for line in sys.stdin.readlines(): #{
 		if buffer != '': #{
 			toknum = toknum + 1;
 			buffer = buffer.split('\n');
-			ord = rword.findall(buffer[0])[0];
-			lem = rbase.findall(buffer[1])[0];
+			ord = rword.findall(buffer[0])[0].replace(' ', '·');
+			lem = rbase.findall(buffer[1])[0].replace(' ', '·');
 			categs = rcateg.findall(buffer[1]);
 			pos = '_'
 			if len(categs) > 0: #{

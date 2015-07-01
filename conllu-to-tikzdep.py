@@ -1,5 +1,17 @@
 #!/usr/bin/python3
 
+###############################################################################
+#        Convert a file in CoNLL-U format to TikZdependency + XeLaTeX         #
+###############################################################################
+#
+# $ cat output.conllu  | python3 ~/scripts/conllu-to-tikzdep.py <direction>
+#
+# Where direction is:
+#  * head (default) = head → dependent arrows 
+#  * dependent = dependent → head arrows 
+#
+###############################################################################
+
 import sys, re;
 
 header = """
@@ -34,7 +46,7 @@ footer = """
 
 ###############################################################################
 
-def trykk(s, f): #{
+def trykk(s, f, o): #{
 
 	for j in range(0,3): #{
 		last = False;
@@ -59,27 +71,39 @@ def trykk(s, f): #{
 
 	seenRoot = False;
 	rootNode = '';
+	rootPos = 1;
 	for ord in s: #{
-		if s[ord][3][1] == "0" and not seenRoot: #{
-			print("\deproot{%s}{\qgmk{root}}" % s[ord][3][0], file=f);
-			rootNode = s[ord][3][0];
+		if s[ord][3][0] == "0" and not seenRoot: #{
+			print("\deproot{%s}{\qgmk{root}}" % s[ord][3][rootPos], file=f);
+			rootNode = s[ord][3][rootPos];
 			seenRoot = True;
 			continue;
+		#}
+
 		if s[ord][3][1] == "0" and seenRoot: #{
 			print("\depedge[edge unit distance=1.5ex,edge below]{%s}{%s}{\qgmk{%s}}" % (s[ord][3][0], rootNode, "x"), file=f);
 		else: #{
-			print("\depedge{%s}{%s}{\qgmk{%s}}" % (s[ord][3][0], s[ord][3][1], s[ord][3][2].lower()), file=f);
+			if o == 'head': #{
+				print("\depedge{%s}{%s}{\qgmk{%s}}" % (s[ord][3][0], s[ord][3][1], s[ord][3][2].lower()), file=f);
+			else: #{
+				print("\depedge{%s}{%s}{\qgmk{%s}}" % (s[ord][3][1], s[ord][3][0], s[ord][3][2].lower()), file=f);
+			#}
 		#}
-	
+
 	#}
 		
 #}
 
 ###############################################################################
 
+origin = 'head'
 prefiks = '/tmp/sentence.';
 sno = 0;
 pos = 0;
+
+if len(sys.argv) > 1 and sys.argv[1] == 'dependent': #{
+	origin = 'dependent';
+#}
 
 # words[0] = ('Город', 'город', 'n', (1,2,'subj'))
 words = {}
@@ -94,7 +118,7 @@ for line in sys.stdin.readlines(): #{
 		fitxer = prefiks + str(sno).zfill(4) + '.tex';
 		fil = open(fitxer, 'w+');
 		print(header, file=fil);
-		trykk(words, fil);
+		trykk(words, fil, origin);
 		print(footer, file=fil);
 		words = {};
 		pos = 0;
@@ -103,16 +127,19 @@ for line in sys.stdin.readlines(): #{
 	#}
 	if line.count('\t') > 4: #{
 		row = line.split('\t');
-		if '-' in row[0]:
+		if '-' in row[0]: #{
 			multiword = row[1]
-		else:
-			if row[1]=="_":
-				if multiword:
+		else: #{
+			if row[1]=="_": #{
+				if multiword: #{
 					row[1] = multiword
 					multiword = False
-				else:
+				else: #{
 					row[1] = "\\_"
-			words[pos] = (row[1], row[2], row[4], (row[0], row[6], row[7].strip()));
+				#}
+			#}
+			words[pos] = (row[1], row[2], row[4], (row[6], row[0], row[7].strip()));
 			pos = pos + 1;
+		#}
 	#}
 #}
