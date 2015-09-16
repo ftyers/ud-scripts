@@ -17,3 +17,7 @@ Convert CoNLL-U to TiKZdependency graphs. One file per input sentence.
 
 Replace the fourth column of CoNLL-U format with universal POS tags based on Apertium
 POS tags.
+
+*conllu-trim.py:*
+
+Remove double blank lines between sentences

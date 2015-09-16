@@ -1,0 +1,20 @@
+sg	Number=Sing
+pl	Number=Plur
+nom	Case=Nom
+attr	Case=Attr
+gen	Case=Gen
+dat	Case=Dat
+acc	Case=Acc
+loc	Case=Loc
+abl	Case=Abl
+ins	Case=Ins
+p1	Person=1
+p2	Person=2
+p3	Person=3
+px1sg	Person[psor]=1|Number[psor]=Sing
+px2sg	Person[psor]=2|Number[psor]=Sing
+px3sp	Person[psor]=3
+px1pl	Person[psor]=1|Number[psor]=Plur
+px2pl	Person[psor]=2|Number[psor]=Plur
+past	VerbForm=Fin
+gpr_past	
