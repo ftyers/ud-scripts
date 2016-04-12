@@ -5,7 +5,7 @@ cm	PUNCT
 cnjadv	SCONJ
 cnjcoo	CONJ
 cnjsub	SCONJ
-cop	VERB
+cop	AUX
 det	DET
 emph	X
 guio	PUNCT
