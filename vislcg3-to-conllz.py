@@ -1,6 +1,7 @@
 
 import sys;
 
+# Input:
 # "<Радианның>"
 #	"радиан" n gen
 # "<басқа да>"
@@ -20,6 +21,7 @@ import sys;
 # "<.>"
 # 	"." sent
 
+# Output:
 # 1	Радианның	радиан	_	n	gen
 # 2-4	басқа да	_	_	_	_
 # 2	басқа да	басқа	_	adj	subst|nom
@@ -44,15 +46,42 @@ def surf(s): #{
 #}
 
 def lemma(s): #{
-	return s.strip().split(' ')[0][1:-1];
+	quot = s.count('"'); 
+	lem = '';
+	if quot == 2: #{
+		lem = s.strip().split('"')[1];
+	elif quot == 3: #{
+		return '"';
+	else: #{
+		print('!!! WTF', s, file=sys.stderr);
+	#}
+	return lem;
 #}
 
 def pos(s): #{
-	return s.strip().split(' ')[1];
+	quot = s.count('"'); 
+	categ = '';
+	if quot == 2: #{
+		categ = s.strip().split('"')[2].strip().split(' ')[0];
+	elif quot == 3: #{
+		categ = s.strip().split('"')[3].strip().split(' ')[0];
+	else: #{
+		print('!!! WTF', s, file=sys.stderr);
+	#}
+	return categ;
 #}
 
 def feats(s): #{
-	return '|'.join(s.strip().split(' ')[2:]);
+	quot = s.count('"'); 
+	morf = '';
+	if quot == 2: #{
+		morf = '|'.join(s.strip().split('"')[2].strip().split(' ')[1:]).strip('|');
+	elif quot == 3: #{
+		morf = '_';
+	else: #{
+		print('!!! WTF', s, file=sys.stderr);
+	#}
+	return morf ; 
 #}
 
 superf = '';
@@ -63,8 +92,8 @@ morf = '';
 buf = '';
 
 for line in sys.stdin.readlines(): #{
+	# End of sentence
 	if line.strip() == '': #{
-
 
 		if buf != '': #{
 			span = 0 ;
@@ -90,14 +119,14 @@ for line in sys.stdin.readlines(): #{
 				#}
 				print('%d\t%s\t%s\t_\t%s\t%s' % (i, superf, lema, categ, morf));
 			else: #{
-				print('%d-%d\t%s\t' % (i, j-1, superf));
+				print('%d-%d\t%s\t_\t_\t_\t_' % (i, j-1, superf));
 				k = i; 
 				for linia in buf.split('\n')[1:]: #{
 					if linia == '': #{
 						continue;
 					#}
 					k = i + linia.count('\t') - 1;
-#					print('!!!', tokid, span, i, j, k, linia, file=sys.stderr);
+					print('!!!', tokid, span, i, j, k, linia, file=sys.stderr);
 					lema = lemma(linia);
 					if linia[2] == '*': #{
 						categ = 'unk' ;
@@ -125,6 +154,7 @@ for line in sys.stdin.readlines(): #{
 		continue;
 	#}
 
+	# We hit a new input token
 	if line[0] == '"' and line[1] == '<': #{
 		if buf != '': #{
 			span = 0 ;
@@ -135,23 +165,27 @@ for line in sys.stdin.readlines(): #{
 			superf = surf(buf.split('\n')[0]);
 			i = tokid  ;
 			j = tokid + span ;
+#			print('$$$ i=%d, j=%d, span=%d' % (i, j, span), buf, file=sys.stderr);
 			if span == 1: #{
-				linia = buf.split('\n')[1];
-				lema = lemma(linia);
-				if linia[2] == '*': #{
-					categ = 'unk' ;
-					morf = '_';
-				else: #{
-					categ = pos(linia);
-					morf = feats(linia);	
+				#linia = buf.split('\n')[1];
+				for linia in buf.split('\n')[1:-1]: #{	
+#					print('###', linia, file=sys.stderr);
+					lema = lemma(linia);
+					if linia[2] == '*': #{
+						categ = 'unk' ;
+						morf = '_';
+					else: #{
+						categ = pos(linia);
+						morf = feats(linia);	
+					#}
+	
+					if morf == '': #{
+						morf = '_';
+					#}
+					print('%d\t%s\t%s\t_\t%s\t%s' % (i, superf, lema, categ, morf));
 				#}
-
-				if morf == '': #{
-					morf = '_';
-				#}
-				print('%d\t%s\t%s\t_\t%s\t%s' % (i, superf, lema, categ, morf));
 			else: #{
-				print('%d-%d\t%s\t' % (i, j-1, superf));
+				print('%d-%d\t%s\t_\t_\t_\t_' % (i, j-1, superf));
 				k = i; 
 				for linia in buf.split('\n')[1:]: #{
 					if linia == '': #{
@@ -208,7 +242,7 @@ if buf != '': #{
 		#}
 		print('%d\t%s\t%s\t_\t%s\t%s' % (i, superf, lema, categ, morf));
 	else: #{
-		print('%d-%d\t%s\t' % (i, j-1, superf));
+		print('%d-%d\t%s\t_\t_\t_\t_' % (i, j-1, superf));
 		k = i; 
 		for linia in buf.split('\n')[1:]: #{
 			if linia == '': #{

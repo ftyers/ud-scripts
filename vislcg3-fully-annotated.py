@@ -10,6 +10,12 @@ rparent = re.compile('->([0-9]+)');
 rfunc = re.compile('@(.+) #');
 rdep = re.compile('#[0-9]+->[0-9]+');
 
+dissUnk = False;
+
+if len(sys.argv) > 1: #{
+	dissUnk = True;
+#}
+
 # Input:
 #	"<Қала>"
 #		"қала" n nom @nmod #1->2
@@ -27,8 +33,13 @@ complete = 0;
 cleantokens = 0;
 for line in sys.stdin.readlines(): #{
 		
-	if line.strip() == '' and blokk != '': #{
-		print('# %d %d/%d' % (sentcount, len(rdep.findall(blokk)), blokk.count('\t"')),file=sys.stderr);
+	if line.strip() == '' or line.strip() == '¶' and blokk != '': #{
+		print('# %d %d/%d %d' % (sentcount, len(rdep.findall(blokk)), blokk.count('\t"'), blokk.count('"\*')),file=sys.stderr);
+		if dissUnk and blokk.count('"*') > 0: #{
+			blokk = '';
+			sentcount = sentcount + 1;
+			continue;
+		#}
 		if blokk.count('\t"') == len(rdep.findall(blokk)): #{
 			complete = complete + 1;
 			#blokk = blokk + line;
@@ -46,6 +57,12 @@ for line in sys.stdin.readlines(): #{
 line = '';
 if blokk != '': #{
 	print('# %d %d/%d' % (sentcount, len(rdep.findall(blokk)), blokk.count('\t"')),file=sys.stderr);
+	if dissUnk and blokk.count('"*') > 0: #{
+		print('')
+		print(complete,'/',sentcount,file=sys.stderr);
+		print(cleantokens, file=sys.stderr);
+		sys.exit(0);
+	#}
 	if blokk.count('\t"') == len(rdep.findall(blokk)): #{
 		blokk = blokk + line;
 		cleantokens = cleantokens + blokk.count('"<');
