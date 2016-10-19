@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 #    1	Радианның	радиан	_	n	gen	4	nmod:poss	_	_
 #    2-3	басқа да	_	_	_	_	_	_	_	_
 #    2	_	басқа	_	adj	_	4	amod	_	_
