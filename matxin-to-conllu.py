@@ -85,6 +85,7 @@ for sent in root.findall(".//SENTENCE"): #{
 		print('SENTENCE', sent.attrib['ord'], 'is missing nodes.', kk, file=sys.stderr)
 		continue
 	#}
+	print('# ord: %s' % (sent.attrib['ord']));
 	for node in kk: #{
 		#1    2     3    4     5    6   7     8    9        10
 		(id, form, lem, upos, xpos, mi, head, dep, deprels, misc) = Globals.NODES[node];
@@ -104,4 +105,4 @@ for sent in root.findall(".//SENTENCE"): #{
 	print('');
 #}
 
-print(validsent,'/',insent);
+print(validsent,'/',insent, file=sys.stderr);

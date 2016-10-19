@@ -70,13 +70,19 @@ def proc(depth, nodes, deps, node): #{
 	return ;
 #}
 open = 0;
+ord = 0;
 for line in sys.stdin.readlines(): #{
 	line = line.strip('\n');
+	if line.count('# ord:') > 0: #{
+		ord = int(line.split('ord:')[1].strip().split(' ')[0].strip());
+	elif line == '\n': #{
+		ord = 0;
+	#}
 	if line.count('\t') > 1: #{
 		row = line.split('\t');
 		if row[0] == '1': #{
 			scount = scount + 1;
-			print('<SENTENCE ord="%d" alloc="%d">' % (scount, ccount)) ;
+			print('<SENTENCE ord="%d" alloc="%d">' % (ord, ccount)) ;
 			open = 1;
 		#}
 		if row[0].count('-') > 0: #{
