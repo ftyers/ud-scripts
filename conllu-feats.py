@@ -1,5 +1,9 @@
 import sys, collections;
 
+# List of rules in the format: 
+# (priority, set([in, tags]), set([out, tags]))
+# The priority is used to determine rule application order. Things that are more specific
+# should come first, then backoff stuffs
 symbs = [];
 
 def convert(lema, xpos, feat, s): #{
@@ -40,6 +44,7 @@ def convert(lema, xpos, feat, s): #{
 
 sf = open(sys.argv[1]);
 
+# Read in the replacement rules
 for line in sf.readlines(): #{
 
 	line = line.strip('\n');
@@ -80,19 +85,30 @@ for line in sf.readlines(): #{
 		
 	print(nivell, inn, out, file=sys.stderr);
 #}
-symbs.sort();
+# Order the rules by priority
+symbs.sort(); 
 
+# Process a CoNLL-U file from stdin
 for line in sys.stdin.readlines(): #{
 
 	if line.count('\t') == 9: #{
 		row = line.strip('\n').split('\t');
+		if row[0].count('-') > 0: #{
+			sys.stdout.write(line);
+			continue;
+		#}
+
 		#3	vuosttalda	vuosttaldit	_	V	TV|Ind|Prs|Sg3	0	FMV	_	_
 		lema = row[2];
 		xpos = row[4];
 		feat = row[5].split('|');
 		misc = lema + '|' + xpos + '|' + '|'.join(feat).replace('_', '');
+		misc = misc.strip('|');
 
 		(u_lema, u_pos, u_feat) = convert(lema, xpos, feat, symbs);
+		u_feat_s = u_feat.split('|');
+		u_feat_s.sort();
+		u_feat = '|'.join(u_feat_s);
 
 		print('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (row[0], row[1], u_lema, u_pos ,xpos, u_feat,row[6], row[7], row[8], misc))
 	else: #{

@@ -71,10 +71,12 @@ for sent in root.findall(".//SENTENCE"): #{
 	insent = insent + 1;	
 	heads = sent.findall("./NODE");
 	if len(heads) == 0: #{
-		print('SENTENCE', sent.attrib['ord'], 'has no head.', file=sys.stderr)
+		print('[',insent,']','SENTENCE', sent.attrib['ord'], 'has no head.', file=sys.stderr)
+		Globals.NODES = {};
 		continue;
 	elif len(heads) > 1: #{
-		print('SENTENCE', sent.attrib['ord'], 'has multiple heads.', file=sys.stderr)
+		print('[',insent,']','SENTENCE', sent.attrib['ord'], 'has multiple heads.', file=sys.stderr)
+		Globals.NODES = {};
 		continue;
 	#}	
 	head = heads[0]
@@ -84,7 +86,8 @@ for sent in root.findall(".//SENTENCE"): #{
 	kk.sort();
 	last = kk[-1];
 	if len(kk) != last: #{
-		print('SENTENCE', sent.attrib['ord'], 'is missing nodes.', kk, file=sys.stderr)
+		print('[',insent,']','SENTENCE', sent.attrib['ord'], 'is missing nodes.', kk, '|||',Globals.NODES[kk[0]], file=sys.stderr)
+		Globals.NODES = {};
 		continue
 	#}
 	print('# ord: %s' % (sent.attrib['ord']));
