@@ -54,16 +54,20 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 		for i in tokens.keys(): #{
 			lem = '"'.join(tokens[i][1].split('"')[0:2]).strip();
 			if tokens[i][0].strip().count(' ') == lem.count(' ') and lem.count(' ') > 0: #{
-				print('[',cur_tok,max_tok,'] +', i, '|||', tokens[i], heads[i], file=sys.stderr)
+				print('¶ [',cur_tok,max_tok,'] ¶', i, '|||', tokens[i], heads[i], file=sys.stderr)
 				for j in tokens.keys(): #{
 					if j == i: #{ 
-						new_tokens[j] = break_token(tokens[j], 0, 1);
-						new_tokens[j+1] = break_token(tokens[j], 1, 1);
-						new_heads[j] = j+1
+						local_max = lem.count(' ');
+						for k in range(0, local_max+1): #{
+							new_tokens[j+k] = break_token(tokens[j], k, local_max);
+						#}
+						for k in range(0, local_max): #{
+							new_heads[j+k] = j+local_max;	
+						#}
 						if heads[j] >= i: #{
-							new_heads[j+1] = heads[j]+1;
+							new_heads[j+local_max] = heads[j]+local_max;
 						else: #{
-							new_heads[j+1] = heads[j];
+							new_heads[j+local_max] = heads[j];
 						#}
 						print('@', j, i, heads[j], file=sys.stderr);
 					elif j > i: #{
