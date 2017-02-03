@@ -102,12 +102,15 @@ for line in sys.stdin.readlines(): #{
 		lema = row[2];
 		xpos = row[4];
 		feat = row[5].split('|');
-		misc = lema + '|' + xpos + '|' + '|'.join(feat).replace('_', '');
+		misc = row[9];
+		if misc != '_': #{
+			misc = row[9].strip() + '|' + lema + '|' + xpos + '|' + '|'.join(feat).replace('_', '');
+		#}
 		misc = misc.strip('|');
 
 		(u_lema, u_pos, u_feat) = convert(lema, xpos, feat, symbs);
 		u_feat_s = u_feat.split('|');
-		u_feat_s.sort();
+		u_feat_s.sort(key=str.lower);
 		u_feat = '|'.join(u_feat_s);
 
 		print('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (row[0], row[1], u_lema, u_pos ,xpos, u_feat,row[6], row[7], row[8], misc))

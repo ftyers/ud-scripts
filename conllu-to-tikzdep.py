@@ -138,7 +138,14 @@ for line in sys.stdin.readlines(): #{
 					row[1] = "\\_"
 				#}
 			#}
-			words[pos] = (row[1], row[2], row[4], (row[6], row[0], row[7].strip()));
+			print(row,file=sys.stderr);
+			words[pos] = (row[1], row[2], '-', (row[6], row[0], row[7].strip()));
+			if row[4] != '_': #{
+				words[pos] = (row[1], row[2], row[4], (row[6], row[0], row[7].strip()));
+			#}
+			if row[3] != '_': #{
+				words[pos] = (row[1], row[2], row[3], (row[6], row[0], row[7].strip()));
+			#}
 			pos = pos + 1;
 		#}
 	#}

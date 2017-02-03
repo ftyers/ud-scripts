@@ -22,7 +22,7 @@
 #	        "." sent @punct #6->5
 
 
-import sys, copy ;
+import sys;
 
 # If the token has space in lemma, and surface form and the number of analysis lines is 1
 # split the lemma and the surface form into two tokens.
@@ -39,18 +39,87 @@ def break_token(t, idx, idmax): #{
 	if idx == idmax: #{
 		tags = ' '.join(t[1].split('"')[2:]);
 	else: #{
-		tags = ' x @compound ';
+		tags = ' x @dep ';
 	#}
 
 	return ('"<' + surf[idx] + '>"\n', '\t"'+lem[idx]+'"' + tags);
 #}
 
+def kasitella(heads, tokens, cur_sur, max_tok): #{
+	
+	cur_tok = 0;
+	while cur_tok <= max_tok: #{
+		new_tokens = {};
+		new_heads = {};
+		for i in tokens.keys(): #{
+			lem = '"'.join(tokens[i][1].split('"')[0:2]).strip();
+			if tokens[i][0].strip().count(' ') == lem.count(' ') and lem.count(' ') > 0: #{
+				print('[',cur_tok,max_tok,'] +', i, '|||', tokens[i], heads[i], file=sys.stderr)
+				for j in tokens.keys(): #{
+					if j == i: #{ 
+						new_tokens[j] = break_token(tokens[j], 0, 1);
+						new_tokens[j+1] = break_token(tokens[j], 1, 1);
+						new_heads[j] = j+1
+						if heads[j] >= i: #{
+							new_heads[j+1] = heads[j]+1;
+						else: #{
+							new_heads[j+1] = heads[j];
+						#}
+						print('@', j, i, heads[j], file=sys.stderr);
+					elif j > i: #{
+						new_tokens[j+1] = tokens[j];
+						if heads[j] >= i: #{
+							new_heads[j+1] = heads[j]+1;
+						else: #{
+							new_heads[j+1] = heads[j];
+						#}
+						print('!', j, i, heads[j], new_heads[j+1], file=sys.stderr);
+					else: #{
+						new_tokens[j] = tokens[j];
+						if heads[j] >= i: #{
+							new_heads[j] = heads[j]+1;
+						else: #{
+							new_heads[j] = heads[j];
+						#}
+						print('%', j, i, heads[j], file=sys.stderr);
+					#}
+				#}
+				print('===', new_tokens, file=sys.stderr);
+				print('===', new_heads, file=sys.stderr);
+				cur_tok = j;
+				break;
+			else: #{
+				print('[',cur_tok,max_tok,'] >', tokens, file=sys.stderr);
+				print('[',cur_tok,max_tok,'] >', i, tokens[i], file=sys.stderr);
+		#		print('[',cur_tok,max_tok,'] >', i, heads[i], file=sys.stderr);
+				new_tokens[i] = tokens[i];
+				new_heads[i] = heads[i]
+				cur_tok = i+1;
+				#break;
+			#}
+		#}
+		tokens = new_tokens;
+		heads = new_heads;
+	#}	
+
+	for i in tokens.keys(): #{
+	#	print(i, tokens[i], heads[i])
+		print(tokens[i][0] + tokens[i][1] + '#' + str(i) + '->' + str(heads[i]));
+	#}
+#}
+
 heads = {};
 tokens = {};
 cur_sur = '';
+max_tok = 0;
 for line in sys.stdin.readlines(): #{
 
 	if line.strip() == '': #{
+		print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', file=sys.stderr);
+		kasitella(heads, tokens, cur_sur, max_tok)
+		heads = {};
+		tokens = {};
+		cur_sur = '';
 		print('');
 		continue;
 	#}
@@ -71,64 +140,3 @@ for line in sys.stdin.readlines(): #{
 		print('Invalid:', file=sys.stderr);
 	#}
 #}
-
-cur_tok = 0;
-while cur_tok <= max_tok: #{
-	new_tokens = {};
-	new_heads = {};
-	for i in tokens.keys(): #{
-		lem = '"'.join(tokens[i][1].split('"')[0:2]).strip();
-		if tokens[i][0].strip().count(' ') == lem.count(' ') and lem.count(' ') > 0: #{
-			print('[',cur_tok,max_tok,'] +', i, '|||', tokens[i], heads[i])
-			for j in tokens.keys(): #{
-				if j == i: #{ 
-					new_tokens[j] = break_token(tokens[j], 0, 1);
-					new_tokens[j+1] = break_token(tokens[j], 1, 1);
-					new_heads[j] = j+1
-					if heads[j] >= i: #{
-						new_heads[j+1] = heads[j]+1;
-					else: #{
-						new_heads[j+1] = heads[j];
-					#}
-					print('@', j, i, heads[j]);
-				elif j > i: #{
-					new_tokens[j+1] = tokens[j];
-					if heads[j] >= i: #{
-						new_heads[j+1] = heads[j]+1;
-					else: #{
-						new_heads[j+1] = heads[j];
-					#}
-					print('!', j, i, heads[j], new_heads[j+1]);
-				else: #{
-					new_tokens[j] = tokens[j];
-					if heads[j] >= i: #{
-						new_heads[j] = heads[j]+1;
-					else: #{
-						new_heads[j] = heads[j];
-					#}
-					print('%', j, i, heads[j]);
-				#}
-			#}
-			print('===', new_tokens);
-			print('===', new_heads);
-			cur_tok = j;
-			break;
-		else: #{
-			print('[',cur_tok,max_tok,'] >', tokens);
-			print('[',cur_tok,max_tok,'] >', i, tokens[i]);
-	#		print('[',cur_tok,max_tok,'] >', i, heads[i]);
-			new_tokens[i] = tokens[i];
-			new_heads[i] = heads[i]
-			cur_tok = i;
-		#}
-	#}
-	tokens = new_tokens;
-	heads = new_heads;
-#}	
-
-for i in tokens.keys(): #{
-#	print(i, tokens[i], heads[i])
-	print(tokens[i][0] + tokens[i][1] + '#' + str(i) + '->' + str(heads[i]));
-#}
-
-print('');

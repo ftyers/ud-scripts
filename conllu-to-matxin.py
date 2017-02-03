@@ -49,7 +49,12 @@ def proc(depth, nodes, deps, node): #{
 	if node != 0: #{
 		form = escape(nodes[node][1]);
 		lem = escape(nodes[node][2]);
-		mi = nodes[node][4] + '|' + nodes[node][5];
+		mi = '_';
+		if nodes[node][4] != '_': #{
+			mi = nodes[node][4] + '|' + nodes[node][5];
+		elif nodes[node][3] != '_': #{
+			mi = nodes[node][3] + '|' + nodes[node][5];
+		#}
 		mi = mi.replace('|_', '').replace('<', '[').replace('>', ']');
 		si = nodes[node][7].replace('>', '→').replace('<', '←');
 		if node in deps and len(deps[node]) > 0: #{
@@ -76,11 +81,12 @@ ord = 0;
 for line in sys.stdin.readlines(): #{
 	line = line.strip('\n');
 	if line.count('# ord:') > 0: #{
+		line = line.replace('\t_', '\t');
 		ord = int(line.split('ord:')[1].strip().split(' ')[0].strip());
 	elif line == '\n': #{
 		ord = 0;
 	#}
-	if line.count('\t') > 1: #{
+	if line.count('\t') > 1 and line[0] != '#': #{
 		row = line.split('\t');
 		if row[0] == '1': #{
 			scount = scount + 1;
