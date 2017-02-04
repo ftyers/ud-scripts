@@ -69,7 +69,7 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 						else: #{
 							new_heads[j+local_max] = heads[j];
 						#}
-						print('@', j, i, heads[j], file=sys.stderr);
+						print('@', j, i, heads[j], lem, file=sys.stderr);
 					elif j > i: #{
 						new_tokens[j+1] = tokens[j];
 						if heads[j] >= i: #{
@@ -77,7 +77,7 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 						else: #{
 							new_heads[j+1] = heads[j];
 						#}
-						print('!', j, i, heads[j], new_heads[j+1], file=sys.stderr);
+						print('!', j, i, heads[j], new_heads[j+1], lem, file=sys.stderr);
 					else: #{
 						new_tokens[j] = tokens[j];
 						if heads[j] >= i: #{
@@ -85,23 +85,23 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 						else: #{
 							new_heads[j] = heads[j];
 						#}
-						print('%', j, i, heads[j], file=sys.stderr);
+						print('%', j, i, heads[j], lem, file=sys.stderr);
 					#}
 				#}
 				print('===', new_tokens, file=sys.stderr);
 				print('===', new_heads, file=sys.stderr);
-				cur_tok = j;
+				cur_tok = i;
 				break;
 			else: #{
 				print('[',cur_tok,max_tok,'] >', tokens, file=sys.stderr);
-				print('[',cur_tok,max_tok,'] >', i, tokens[i], file=sys.stderr);
-		#		print('[',cur_tok,max_tok,'] >', i, heads[i], file=sys.stderr);
+				print('§ [',cur_tok,max_tok,'] § >', i, '|||', tokens[i], '|||', file=sys.stderr);
 				new_tokens[i] = tokens[i];
 				new_heads[i] = heads[i]
 				cur_tok = i+1;
 				#break;
 			#}
 		#}
+		print(i, '////////////////////////////////////////////////////////////////////////', file=sys.stderr);
 		tokens = new_tokens;
 		heads = new_heads;
 	#}	
