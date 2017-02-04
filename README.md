@@ -9,6 +9,10 @@ Flatten VISL-CG3 output, replaces subreadings with null surface tokens (well, ac
 
 Convert VISL-CG3 output to ConLL-X format. 
 
+*vislcg3-split-space.py:*
+
+Split multiword tokens where the number of spaces in the surface form and lemma are the same into two tokens.
+
 *conllu-to-tikzdep.py:*
 
 Convert CoNLL-U to TiKZdependency graphs. One file per input sentence.
