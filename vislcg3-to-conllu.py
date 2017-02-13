@@ -69,7 +69,7 @@ def tekst(blokk): #{
 		#}
 		if line[0] == '"': #{
 			tok = line.strip()[2:-2];
-			if tok in [',', '.', ':', ';', '!', '?'] or first: #{
+			if tok in [',', '.', ':', ';', '!', '?', '...'] or first: #{
 				o = o + tok;
 			else: #{
 				o = o + ' ' + tok;
@@ -82,7 +82,8 @@ def tekst(blokk): #{
 	o = o.replace('( ', '(');
 	o = o.replace(' )', ')');
 	o = o.replace('« ', '«');
-	o = o.replace(' »', '»');
+	o = o.replace('“ ', '“');
+	o = o.replace(' ”', '”');
 	o = o.replace(' - ', '-');
 	o = o.replace('!-', '! - ');
 	o = o.replace(',-', ', - ');
@@ -106,6 +107,7 @@ def tekst(blokk): #{
 	#}
 	o = new_o;
 	o = o.replace(' " ', '" ');
+	o = o.replace(' ",', '",');
 
 	return o ;
 #}

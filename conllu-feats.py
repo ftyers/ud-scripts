@@ -6,12 +6,13 @@ import sys, collections;
 # should come first, then backoff stuffs
 symbs = [];
 
-def convert(lema, xpos, feat, s): #{
+def convert(lema, xpos, feat, dep, s): #{
 	u_lema = lema;
 	u_pos = '_';
 	u_feat = '';
+	u_dep = dep;
 
-	msd = set([xpos] + feat);
+	msd = set([xpos] + feat + [dep]);
 
 	print('>', msd, file=sys.stderr);
 
@@ -19,7 +20,7 @@ def convert(lema, xpos, feat, s): #{
 		remainder = msd - i[1];
 		intersect = msd.intersection(i[1]);
 		if intersect == i[1]: #{
-			print('-', msd, intersect, remainder, i[2], '|||', u_pos, u_feat, file=sys.stderr);
+			print('-', msd, intersect, remainder, i[2], '|||', u_pos, u_feat, u_dep, file=sys.stderr);
 			for j in list(i[2]): #{
 				if j == j.upper(): #{
 					u_pos = j;
@@ -39,7 +40,7 @@ def convert(lema, xpos, feat, s): #{
 		u_feat = '_';
 	#}
 
-	return (u_lema, u_pos, u_feat);
+	return (u_lema, u_pos, u_feat, u_dep);
 #}
 
 sf = open(sys.argv[1]);
@@ -52,21 +53,29 @@ for line in sf.readlines(): #{
 	inn_lem = row[0];
 	inn_pos = row[1];
 	inn_feat = row[2];
-	out_lem = row[3];
-	out_pos = row[4];
-	out_feat = row[5];
+	inn_dep = row[3];
+	out_lem = row[4];
+	out_pos = row[5];
+	out_feat = row[6];
+	out_dep = row[7];
 
 	nivell = -1;
 	inn = set();
-	if inn_pos != '_' and inn_feat != '_': #{
-		inn = set([inn_pos] + inn_feat.split('|'));	
+	if inn_pos != '_' and inn_feat != '_' and inn_dep != '_': #{
+		inn = set([inn_pos] + inn_feat.split('|') + [inn_dep]);	
 		nivell = 1;
+	elif inn_pos != '_' and inn_dep != '_': #{
+		inn = set([inn_pos] + [inn_dep]);	
+		nivell = 2;
+	elif inn_pos != '_' and inn_feat != '_': #{
+		inn = set([inn_pos] + inn_feat.split('|'));	
+		nivell = 3;
 	elif inn_pos == '_' and inn_feat != '_': #{
 		inn = set(inn_feat.split('|'));	
-		nivell = 2;
+		nivell = 4;
 	elif inn_pos != '_' and inn_feat == '_': #{
 		inn = set([inn_pos]);	
-		nivell = 2;
+		nivell = 4;
 	#}
 
 	out = set();
@@ -102,14 +111,15 @@ for line in sys.stdin.readlines(): #{
 		lema = row[2];
 		xpos = row[4];
 		feat = row[5].split('|');
+		udep = row[7];
 		misc = row[9];
 		if misc != '_': #{
 			misc = row[9].strip() + '|' + lema + '|' + xpos + '|' + '|'.join(feat).replace('_', '');
 		#}
 		misc = misc.strip('|');
 
-		(u_lema, u_pos, u_feat) = convert(lema, xpos, feat, symbs);
-		u_feat_s = u_feat.split('|');
+		(u_lema, u_pos, u_feat, u_dep) = convert(lema, xpos, feat, udep, symbs);
+		u_feat_s = list(set(u_feat.split('|')));
 		u_feat_s.sort(key=str.lower);
 		u_feat = '|'.join(u_feat_s);
 

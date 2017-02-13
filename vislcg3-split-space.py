@@ -101,7 +101,7 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 				#break;
 			#}
 		#}
-		print(i, '////////////////////////////////////////////////////////////////////////', file=sys.stderr);
+		print(cur_tok, '////////////////////////////////////////////////////////////////////////', file=sys.stderr);
 		tokens = new_tokens;
 		heads = new_heads;
 	#}	
