@@ -109,7 +109,7 @@ def kasitella(blokk): #{
 					new_tokens[k] = new_local
 				#}
 				#cur_tok = null_cop[0] + null_cop[1];
-				print('&&&&', null_cop);
+				print('&&&&', null_cop, file=sys.stderr);
 				cur_tok = null_cop[0] ;
 				break;
 			else: #{
