@@ -82,6 +82,7 @@ def tekst(blokk): #{
 	o = o.replace('( ', '(');
 	o = o.replace(' )', ')');
 	o = o.replace('« ', '«');
+	o = o.replace(' »', '»');
 	o = o.replace('“ ', '“');
 	o = o.replace(' ”', '”');
 	o = o.replace(' - ', '-');
@@ -112,14 +113,13 @@ def tekst(blokk): #{
 	return o ;
 #}
 
-def trykk(buffer, tokcount): #{
-	noSpace = [',', ':', '.', ';', '!', '?'];
+def trykk(buffer, tokcount, charcount, t): #{
+	newt = t + ' ' * tokcount;
 	if buffer.strip() == '': #{
-		return tokcount;
+		return (tokcount, charcount);
 	#}
 	llong = buffer.count('\n') - 2;
 	tokcount = tokcount + 1; 
-	#print('!!!',tokcount,'!!!', buffer,'=====',file=sys.stderr);
 	index = '';
 	if llong > 0: #{
 		index = str(tokcount) + '-' + str(tokcount+llong);
@@ -127,9 +127,15 @@ def trykk(buffer, tokcount): #{
 		index = str(tokcount);
 	#}
 	buffer = buffer.split('\n');
-	ord = rword.findall(buffer[0])[0].strip(); #.replace(' ', '·');
+	ord = rword.findall(buffer[0])[0].strip(); 
+	if ord.count(' ') > 0: #{
+		charcount = charcount + len(ord) + ord.count(' ');
+	else: #{
+		charcount = charcount + len(ord) + 1;
+	#}
+#	print('!!!',tokcount,'!!!', charcount , '!!! "', newt[charcount-1] ,'" |' , t ,'!!!',  buffer,'=====',file=sys.stderr);
 	if llong == 0: #{
-		lem = rbase.findall(buffer[1])[0]; #.replace(' ', '·');
+		lem = rbase.findall(buffer[1])[0]; 
 		categs = rcateg.findall(buffer[1][buffer[1].rfind('"'):]);
 		mor = rparent.findall(buffer[1])[0];
 		etiqueta = rfunc.findall(buffer[1]);
@@ -139,10 +145,11 @@ def trykk(buffer, tokcount): #{
 			etiqueta = etiqueta[0].strip();
 		#}
 		misc = '';
-#		if ord in noSpace: #{
-#			misc = 'SpaceAfter=No';
+#		if len(t) > charcount and newt[charcount-1] != ' ': #{
+#			misc = misc + 'SpaceAfter=No|';
 #		#}
 		misc = misc + '|'.join(rmisc.findall(buffer[1])).replace('>', '').replace('<', '');
+		misc = misc.strip('|');
 		if misc == '': #{
 			misc = '_';
 		#}
@@ -167,12 +174,17 @@ def trykk(buffer, tokcount): #{
 		ord_idx = 0;
 		n_toks = len(buffer[1:-1]);
 #		print('!!!', ord_part, ord_len, ord_idx, n_toks, file=sys.stderr);
+		prev_lem = '';
 		for llinia in buffer[1:]: #{
 			if llinia == '': continue;
 			lem = rbase.findall(llinia)[0];	
 			categs = rcateg.findall(llinia);	
 			mor = rparent.findall(llinia)[0];
 			etiqueta = rfunc.findall(llinia)[0].strip();
+			misc = '';
+#			if len(t) > charcount and newt[charcount-1] != ' ': #{
+#				misc = misc + 'SpaceAfter=No|';
+#			#}
 			misc = '|'.join(rmisc.findall(llinia)).replace('>', '').replace('<', '');
 			if misc == '': #{
 				misc = '_';
@@ -193,25 +205,37 @@ def trykk(buffer, tokcount): #{
 			if n_toks == ord_len: #{
 				sur = ord_part[ord_idx];
 				ord_idx += 1;
-			else: #{
-				M = LCS(ord.lower(), lem);
-				lcsall = backTrackAll(M, ord.lower(), lem, len(ord), len(lem));
-#				print(M, lcsall, file=sys.stderr)
+			elif len(lem) > 1: #{
+				lcsall = '';
+				if ord[0].isupper() and lem[0].isupper(): #{
+					M = LCS(ord, lem);
+					lcsall = backTrackAll(M, ord, lem, len(ord), len(lem));
+				else: #{
+					M = LCS(ord.lower(), lem);
+					lcsall = backTrackAll(M, ord.lower(), lem, len(ord), len(lem));
+				#}
+#				print(M, lcsall,'|',prev_lem, file=sys.stderr)
 				sur = list(lcsall)[0];
+			#}
+#			print(sur, prev_lem, file=sys.stderr);
+			if (sur == '' or sur == '_') and re.match('^'+prev_lem, ord): #{
+				sur = re.sub('^'+prev_lem,'', ord, 1);
 			#}
 			if sur == '': #{
 				sur = '_';
 			#}
 			print('%d\t%s\t%s\t_\t%s\t%s\t%s\t%s\t_\t%s' % (nindex,sur,lem, pos, msd, mor, etiqueta, misc));	
 			nindex = nindex + 1;
+			prev_lem = lem;
 		#}
 	#}
-	return tokcount+llong;
+	return (tokcount+llong, charcount);
 #}
 
-def kasitella(blokk): #{
+def kasitella(blokk, t): #{
 	buffer = ''
 	tokcount = 0;
+	charcount = 0;
 	for line in blokk.split('\n'): #{
 		#print('X', line, file=sys.stderr)
 	
@@ -220,17 +244,19 @@ def kasitella(blokk): #{
 		#}
 	
 		if line.strip() == '': #{
-			#tokcount = tokcount + 1; 
-			tokcount = trykk(buffer, tokcount);
+			(tc, cc) = trykk(buffer, tokcount, charcount, t);
 			buffer = '';
-			#tokcount = 0;
+			tokcount = tc;
+			charcount = cc;
 			#print('');
 			continue;
 		#}	
 	
 		if line[0] == '"' and line[1] == '<' and buffer != '': #{
-			tokcount = trykk(buffer, tokcount);
+			(tc, cc) = trykk(buffer, tokcount, charcount, t);
 			buffer = '';
+			tokcount = tc;
+			charcount = cc;
 			buffer = buffer + line + '\n';
 			continue;
 		#}
@@ -240,9 +266,12 @@ def kasitella(blokk): #{
 		#}
 	#}
 	if buffer != '': #{
-		tokcount = trykk(buffer, tokcount);
+		(tc, cc) = trykk(buffer, tokcount, charcount, t);
+		tokcount = tc;
+		charcount = cc;
+		
 	#}
-	return tokcount;
+	return (tokcount, charcount);
 #}
 
 blokk = '';
@@ -259,9 +288,11 @@ for line in sys.stdin.readlines(): #{
 		if blokk.count('\t"') == len(rdep.findall(blokk)): #{
 			blokk = blokk + line;
 			print('# sent_id = %s:%d:%d' % (prefiks,sentcount,(linecount-blokk.count('\n')+1)));
-			print('# text = %s' % tekst(blokk));
+			t = tekst(blokk);
+			print('# text = %s' % (t));
 			complete = complete + 1;
-			cleantokens = cleantokens + kasitella(blokk);
+			(newtok, newchar) = kasitella(blokk, t);
+			cleantokens = cleantokens + newtok;
 			print('');
 		#}
 		#print(sentcount,file=sys.stderr);
@@ -278,8 +309,10 @@ if blokk != '' and blokk != '\n': #{
 	if blokk.count('\t"') == len(rdep.findall(blokk)): #{
 		blokk = blokk + line;
 		print('# sent_id = %s:%d:%d' % (prefiks,sentcount,(linecount-blokk.count('\n')+1)));
-		print('# text = %s' % tekst(blokk));
-		cleantokens = cleantokens + kasitella(blokk);	
+		t = tekst(blokk);
+		print('# text = %s' % (t));
+		(newtok, newchar) = kasitella(blokk, t);
+		cleantokens = cleantokens + newtok;
 		print('');
 	#}
 #}
