@@ -71,5 +71,5 @@ if blokk != '': #{
 	#}
 #}
 print('')
-print(complete,'/',sentcount,file=sys.stderr);
+print('%.2f\t%d/%d' % (complete/sentcount*100.0, complete, sentcount),file=sys.stderr);
 print(cleantokens, file=sys.stderr);

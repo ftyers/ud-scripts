@@ -169,7 +169,12 @@ def trykk(buffer, tokcount, charcount, t): #{
 	else: #{
 		print('%s\t%s\t_\t_\t_\t_\t_\t_\t_\t_' % (index,ord));	
 		nindex = tokcount;
-		ord_part = ord.split(' ');
+#		ord_part = ord.split(' ');
+		# FIXME: This is for in breton, e.g. P'edon, but will break if you have c'h 
+		ord_part = re.split("[ '’]", ord); 
+		if ord[0] == "'": #{
+			ord_part[0] = "'";
+		#}
 		ord_len = len(ord_part);
 		ord_idx = 0;
 		n_toks = len(buffer[1:-1]);
@@ -215,7 +220,7 @@ def trykk(buffer, tokcount, charcount, t): #{
 					lcsall = backTrackAll(M, ord.lower(), lem, len(ord), len(lem));
 				#}
 #				print(M, lcsall,'|',prev_lem, file=sys.stderr)
-				sur = list(lcsall)[0];
+#				sur = list(lcsall)[0];
 			#}
 #			print(sur, prev_lem, file=sys.stderr);
 			if (sur == '' or sur == '_') and re.match('^'+prev_lem, ord): #{
@@ -240,6 +245,10 @@ def kasitella(blokk, t): #{
 		#print('X', line, file=sys.stderr)
 	
 		if line and line[0] == ';': #{
+			continue;
+		#}
+		if line and line[0] == '#': #{
+			print(line.strip('\n'));
 			continue;
 		#}
 	
@@ -289,7 +298,9 @@ for line in sys.stdin.readlines(): #{
 			blokk = blokk + line;
 			print('# sent_id = %s:%d:%d' % (prefiks,sentcount,(linecount-blokk.count('\n')+1)));
 			t = tekst(blokk);
-			print('# text = %s' % (t));
+			if blokk.count('# text ') == 0: #{
+				print('# text = %s' % (t));
+			#}
 			complete = complete + 1;
 			(newtok, newchar) = kasitella(blokk, t);
 			cleantokens = cleantokens + newtok;
@@ -310,7 +321,9 @@ if blokk != '' and blokk != '\n': #{
 		blokk = blokk + line;
 		print('# sent_id = %s:%d:%d' % (prefiks,sentcount,(linecount-blokk.count('\n')+1)));
 		t = tekst(blokk);
-		print('# text = %s' % (t));
+		if blokk.count('# text ') == 0: #{
+			print('# text = %s' % (t));
+		#}
 		(newtok, newchar) = kasitella(blokk, t);
 		cleantokens = cleantokens + newtok;
 		print('');

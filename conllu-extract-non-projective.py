@@ -91,3 +91,4 @@ for line in sys.stdin.readlines(): #{
 #}
 
 print('total: %d; non-projective: %d' % (sent, n_np), file=sys.stderr)
+print('%d\t%d\t%.2f' % (sent, n_np, n_np/sent*100.0), file=sys.stderr)

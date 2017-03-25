@@ -127,6 +127,7 @@ for line in sys.stdin.readlines(): #{
 	#}
 	if line.count('\t') > 4: #{
 		row = line.split('\t');
+		multiword = False;
 		if '-' in row[0]: #{
 			multiword = row[1]
 		else: #{

@@ -46,7 +46,7 @@ def break_token(t, idx, idmax): #{
 #}
 
 def kasitella(heads, tokens, cur_sur, max_tok): #{
-	
+	#print('!!!', cur_sur, max_tok, '|||', heads, tokens, file=sys.stderr);
 	cur_tok = 0;
 	while cur_tok <= max_tok: #{
 		new_tokens = {};
@@ -55,6 +55,7 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 			lem = '"'.join(tokens[i][1].split('"')[0:2]).strip();
 			if tokens[i][0].strip().count(' ') == lem.count(' ') and lem.count(' ') > 0: #{
 				print('¶ [',cur_tok,max_tok,'] ¶', i, '|||', tokens[i], heads[i], file=sys.stderr)
+				offset = 0;
 				for j in tokens.keys(): #{
 					if j == i: #{ 
 						local_max = lem.count(' ');
@@ -64,28 +65,32 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 						for k in range(0, local_max): #{
 							new_heads[j+k] = j+local_max;	
 						#}
+						print('§', new_tokens, file=sys.stderr);
+						print('½', heads[j], i, file=sys.stderr);
 						if heads[j] >= i: #{
 							new_heads[j+local_max] = heads[j]+local_max;
 						else: #{
 							new_heads[j+local_max] = heads[j];
 						#}
-						print('@', j, i, heads[j], lem, file=sys.stderr);
+						print('\t@|j: %d; i: %d; heads[j]: %d; offset: %d; %s|' %(j,i,heads[j],offset,lem), file=sys.stderr);
+						print('§', new_tokens, file=sys.stderr);
+						offset += local_max;
 					elif j > i: #{
-						new_tokens[j+1] = tokens[j];
+						new_tokens[j+offset] = tokens[j];
 						if heads[j] >= i: #{
-							new_heads[j+1] = heads[j]+1;
+							new_heads[j+offset] = heads[j]+offset;
 						else: #{
-							new_heads[j+1] = heads[j];
+							new_heads[j+offset] = heads[j];
 						#}
-						print('!', j, i, heads[j], new_heads[j+1], lem, file=sys.stderr);
+						print('\t!|j: %d; i: %d; heads[j]: %d; offset: %d; %s|' %(j,i,heads[j],offset,lem), file=sys.stderr);
 					else: #{
 						new_tokens[j] = tokens[j];
 						if heads[j] >= i: #{
-							new_heads[j] = heads[j]+1;
+							new_heads[j] = heads[j]+offset;
 						else: #{
 							new_heads[j] = heads[j];
 						#}
-						print('%', j, i, heads[j], lem, file=sys.stderr);
+						print('\t%%|j: %d; i: %d; heads[j]: %d; offset: %d; %s|' %(j,i,heads[j],offset,lem), file=sys.stderr);
 					#}
 				#}
 				print('===', new_tokens, file=sys.stderr);
@@ -118,7 +123,7 @@ cur_sur = '';
 max_tok = 0;
 for line in sys.stdin.readlines(): #{
 
-	if line.strip() == '': #{
+	if line.strip() == '' and max_tok != 0: #{
 		print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', file=sys.stderr);
 		kasitella(heads, tokens, cur_sur, max_tok)
 		heads = {};
@@ -140,6 +145,8 @@ for line in sys.stdin.readlines(): #{
 		tokens[toki] = (cur_sur, anal);
 		cur_sur = '';
 		max_tok = toki;
+	elif line[0] == '#': #{
+		print(line.strip('\n'));
 	else: #{
 		print('Invalid:', file=sys.stderr);
 	#}
