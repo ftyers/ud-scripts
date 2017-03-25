@@ -201,11 +201,12 @@ def mst(root,G): #{
 # --------------------------------------------------------------------------------- #
 
 if __name__ == "__main__": #{
-	try: #{
-		filenames = sys.argv[1:]
-	except IndexError: #{
+	filenames = [];
+	filenames = sys.argv[1:]
+
+	if len(filenames) < 2: #{
 		sys.stderr.write('no input and/or root node specified\n')
-		sys.stderr.write('usage: python edmonds.py <file1> <file2> ...\n')
+		sys.stderr.write('usage: python3 conllu-voting.py <file1> <file2> ...\n')
 		sys.exit(1)
 	#}
 
