@@ -65,6 +65,56 @@ def proc_node(depth, node, lastnode): #{
 	#}
 #}
 
+
+def proc_tekst(blokk): #{
+	o = '' ;
+
+	first = True;
+	for tok in blokk.split(' '): #{
+		if tok in [',', '.', ':', ';', '!', '?', '...'] or first: #{
+			o = o + tok;
+		else: #{
+			o = o + ' ' + tok;
+		#}
+		first = False;
+	#}
+
+	# Hacks
+	o = o.replace('( ', '(');
+	o = o.replace(' )', ')');
+	o = o.replace('« ', '«');
+	o = o.replace(' »', '»');
+	o = o.replace('“ ', '“');
+	o = o.replace(' ”', '”');
+	o = o.replace(' - ', '-');
+	o = o.replace('!-', '! - ');
+	o = o.replace(',-', ', - ');
+	o = o.replace(':-', ': - ');
+	o = o.replace('?-', '? - ');
+
+	# " Осылай тұр! " дегендей екі иығынан басып қалды, бес-алты адымдай жерге барып тұра қалды.
+	
+	new_o = '';
+	qc = 0;
+	lastc = '';
+	for c in o: #{
+		if c == '"': #{
+			qc = qc + 1;	
+		#}
+		if c == ' ' and qc % 2 == 1 and lastc == '"': #{
+			continue;
+		#}
+		new_o += c;
+		lastc = c;
+	#}
+	o = new_o;
+	o = o.replace(' " ', '" ');
+	o = o.replace(' ",', '",');
+
+	return o ;
+#}
+
+
 insent = 0;
 validsent = 0;
 for sent in root.findall(".//SENTENCE"): #{
@@ -90,7 +140,14 @@ for sent in root.findall(".//SENTENCE"): #{
 		Globals.NODES = {};
 		continue
 	#}
-	print('# ord: %s' % (sent.attrib['ord']));
+	tekst = '';
+	for node in kk: #{
+		tekst = tekst + Globals.NODES[node][1] + ' ';
+	#}
+	tekst = proc_tekst(tekst.strip());
+#	print('# sent_id = %s' % (sent.attrib['ord']));
+	print('# sent_id = %s' % (insent));
+	print('# text = %s' % (tekst));
 	for node in kk: #{
 		#1    2     3    4     5    6   7     8    9        10
 		(id, form, lem, upos, xpos, mi, head, dep, deprels, misc) = Globals.NODES[node];

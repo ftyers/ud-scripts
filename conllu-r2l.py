@@ -98,7 +98,7 @@ def flip_rels(t,rel):
 	    if t.nodes[c].deprel==rel:
 		if c>n.nodeid and tar:
 		    sys.stderr.write('\n!!!STRANGE!!!\n%s'%t.sid.encode('utf-8'))
-		    sys.stderr.write('%d %d %s\n'(c,n.nodeid,rel))
+		    sys.stderr.write('%d %d %s\n' %(c,n.nodeid,rel))
 		elif c<n.nodeid:
 		    tar.append(c)
 	if tar:
