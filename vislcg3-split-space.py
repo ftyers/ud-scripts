@@ -119,6 +119,7 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 
 heads = {};
 tokens = {};
+lineno = 0
 cur_sur = '';
 max_tok = 0;
 for line in sys.stdin.readlines(): #{
@@ -148,6 +149,7 @@ for line in sys.stdin.readlines(): #{
 	elif line[0] == '#': #{
 		print(line.strip('\n'));
 	else: #{
-		print('Invalid:', file=sys.stderr);
+		print('[',lineno,'] Invalid:', line, file=sys.stderr);
 	#}
+	lineno += 1;
 #}
