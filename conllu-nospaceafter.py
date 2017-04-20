@@ -5,8 +5,13 @@ def e(s): #{
 #}
 
 def calc_spaceafter(a, b): #{
+	if '_' in b: #{
+		b = b.replace('_', '');
+	#}
 	
 	if a.replace(' ', '') != b.replace(' ', ''): #{
+		print('[nospace] ERR[a]:', a.replace(' ', ''),'||',a, file=sys.stderr);
+		print('[nospace] ERR[b]:', b.replace(' ', ''),'||',b, file=sys.stderr);
 		return {};
 	#}
 	
@@ -64,6 +69,9 @@ for blokk in sys.stdin.read().split('\n\n'): #{
 			continue;			
 		#}
 		row = line.split('\t');
+		if '.' in row[0] or '-' in row[0]: #{
+			continue;
+		#}	
 		if b == '': #{
 			b = row[1];
 		else: #{
