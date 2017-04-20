@@ -59,23 +59,24 @@ for line in sf.readlines(): #{
 	out_feat = row[6];
 	out_dep = row[7];
 
-	nivell = -1;
+	nivell = -1.0;
 	inn = set();
 	if inn_pos != '_' and inn_feat != '_' and inn_dep != '_': #{
 		inn = set([inn_pos] + inn_feat.split('|') + [inn_dep]);	
-		nivell = 1;
-	elif inn_pos != '_' and inn_dep != '_': #{
+		nivell = 1.0;
+	elif inn_pos != '_' and inn_dep != '_' and inn_feat == '_': #{
 		inn = set([inn_pos] + [inn_dep]);	
-		nivell = 2;
+		nivell = 2.0;
 	elif inn_pos != '_' and inn_feat != '_': #{
+		#print('#', 1.0/(inn_feat.count('|')+1.0), row);
 		inn = set([inn_pos] + inn_feat.split('|'));	
-		nivell = 3;
+		nivell = 3.0 + (1.0/(inn_feat.count('|')+1.0));
 	elif inn_pos == '_' and inn_feat != '_': #{
 		inn = set(inn_feat.split('|'));	
-		nivell = 4;
+		nivell = 5.0;
 	elif inn_pos != '_' and inn_feat == '_': #{
 		inn = set([inn_pos]);	
-		nivell = 4;
+		nivell = 5.0;
 	#}
 
 	out = set();
