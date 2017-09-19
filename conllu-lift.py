@@ -94,7 +94,13 @@ class DependencyTree: #{
 				"9":"misc" #any other annotation
 		}
 
+		self.spans = {} # multitoken spans
+
 		self.head = None
+
+	def add_span(self, list): 
+		idx = int(list[0].split('-')[0]);
+		self.spans[idx] = list
 
 	def add_node(self, list):
 		"""
@@ -243,6 +249,9 @@ class DependencyTree: #{
 
 		for node in range(1, size+1):
 				line =""
+				if node in self.spans: #{
+					print('\t'.join(self.spans[node]));
+				#}
 				for field in range(0, 10):
 					line += self.tree[str(node)].fields[self.no2field[str(field)]] +"\t"
 
@@ -396,9 +405,12 @@ for line in sys.stdin.readlines(): #{
 		continue;
 	#}
 	
-	# deal with spans
+	# deal with empty nodes/enhanced rep
 	
 	row = line.strip('\n').split('\t');
-	tree.add_node(row)
-
+	if row[0].count('-') > 0: #{
+		tree.add_span(row)
+	else: 	
+		tree.add_node(row)
+	#}
 #}

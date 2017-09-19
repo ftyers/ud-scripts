@@ -135,7 +135,11 @@ def trykk(buffer, tokcount, charcount, t): #{
 	#}
 #	print('!!!',tokcount,'!!!', charcount , '!!! "', newt[charcount-1] ,'" |' , t ,'!!!',  buffer,'=====',file=sys.stderr);
 	if llong == 0: #{
-		lem = rbase.findall(buffer[1])[0]; 
+		lems = rbase.findall(buffer[1]);
+		lem = '@LEMMA@'
+		if len(lems) > 0: #{
+			lem = rbase.findall(buffer[1])[0]; 
+		#}
 		categs = rcateg.findall(buffer[1][buffer[1].rfind('"'):]);
 		mor = rparent.findall(buffer[1])[0];
 		etiqueta = rfunc.findall(buffer[1]);

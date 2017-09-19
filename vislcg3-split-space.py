@@ -48,15 +48,21 @@ def break_token(t, idx, idmax): #{
 def kasitella(heads, tokens, cur_sur, max_tok): #{
 	#print('!!!', cur_sur, max_tok, '|||', heads, tokens, file=sys.stderr);
 	cur_tok = 0;
+	# While we are not at the end of the sentence
 	while cur_tok <= max_tok: #{
 		new_tokens = {};
 		new_heads = {};
+		# For each of the tokens in the tree
 		for i in tokens.keys(): #{
 			lem = '"'.join(tokens[i][1].split('"')[0:2]).strip();
+			# If we have found a token we can split, e.g. the lemma has more than 
+			# one space and the number of spaces in the token and in the lemma matches
 			if tokens[i][0].strip().count(' ') == lem.count(' ') and lem.count(' ') > 0: #{
 				print('¶ [',cur_tok,max_tok,'] ¶', i, '|||', tokens[i], heads[i], file=sys.stderr)
-				offset = 0;
+				offset = lem.count(' '); # FIXME: This was below
+				# For each of the tokens in the tree
 				for j in tokens.keys(): #{
+					# If the current token matches the index we are processing
 					if j == i: #{ 
 						local_max = lem.count(' ');
 						for k in range(0, local_max+1): #{
@@ -74,7 +80,7 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 						#}
 						print('\t@|j: %d; i: %d; heads[j]: %d; offset: %d; %s|' %(j,i,heads[j],offset,lem), file=sys.stderr);
 						print('§', new_tokens, file=sys.stderr);
-						offset += local_max;
+#@						offset += local_max; # FIXME: Moved from here
 					elif j > i: #{
 						new_tokens[j+offset] = tokens[j];
 						if heads[j] >= i: #{
@@ -99,7 +105,7 @@ def kasitella(heads, tokens, cur_sur, max_tok): #{
 				break;
 			else: #{
 				print('[',cur_tok,max_tok,'] >', tokens, file=sys.stderr);
-				print('§ [',cur_tok,max_tok,'] § >', i, '|||', tokens[i], '|||', file=sys.stderr);
+				print('® [',cur_tok,max_tok,'] § >', i, '|||', tokens[i], '|||', file=sys.stderr);
 				new_tokens[i] = tokens[i];
 				new_heads[i] = heads[i]
 				cur_tok = i+1;

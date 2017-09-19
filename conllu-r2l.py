@@ -121,7 +121,7 @@ def main():
     fd = len(sys.argv)>2 and codecs.open(sys.argv[2],'w') or sys.stdout
     rels = len(sys.argv)>3 and\
         [l.strip() for l in codecs.open(sys.argv[3],'r','utf-8') if l.strip()]\
-        or ['appos','conj','goeswith','flat','flat:name']
+        or ['appos','conj','goeswith','flat','flat:name', 'fixed', 'fixed:mwe']
     #['conj','goeswith','appos']
     flips = dict.fromkeys(rels,0)
     ct = []
