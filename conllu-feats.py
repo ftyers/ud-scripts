@@ -102,11 +102,11 @@ symbs.sort();
 #for line in sys.stdin.readlines(): #{
 line = sys.stdin.readline()
 while line: #{
-
 	if line.count('\t') == 9: #{
 		row = line.strip('\n').split('\t');
 		if row[0].count('-') > 0: #{
 			sys.stdout.write(line);
+			line = sys.stdin.readline()
 			continue;
 		#}
 

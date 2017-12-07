@@ -115,7 +115,7 @@ def tekst(blokk): #{
 
 def trykk(buffer, tokcount, charcount, t): #{
 	newt = t + ' ' * tokcount;
-	if buffer.strip() == '': #{
+	if buffer.strip() == '' or buffer.count('""') > 0 or buffer.count('"<>"') > 0: #{
 		return (tokcount, charcount);
 	#}
 	llong = buffer.count('\n') - 2;
@@ -127,6 +127,7 @@ def trykk(buffer, tokcount, charcount, t): #{
 		index = str(tokcount);
 	#}
 	buffer = buffer.split('\n');
+	#print('/!@', buffer, file=sys.stderr);
 	ord = rword.findall(buffer[0])[0].strip(); 
 	if ord.count(' ') > 0: #{
 		charcount = charcount + len(ord) + ord.count(' ');
