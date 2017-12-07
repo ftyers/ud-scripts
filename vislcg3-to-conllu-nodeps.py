@@ -298,7 +298,9 @@ complete = 0;
 cleantokens = 0;
 ord = 1;
 prefiks = sys.argv[1].strip();
-for line in sys.stdin.readlines(): #{
+#for line in sys.stdin.readlines(): #{
+line = sys.stdin.readline();
+while line: #{
 	if line.strip() == '' and blokk != '' and blokk != '\n': #{
 #		print('# ord: %d  ||| %d/%d' % (ord, len(rdep.findall(blokk)), blokk.count('\t"')), file=sys.stderr);
 		blokk = blokk + line;
@@ -319,6 +321,7 @@ for line in sys.stdin.readlines(): #{
 	
 	blokk = blokk + line;
 	linecount = linecount + 1;
+	line = sys.stdin.readline();
 #}
 if blokk != '' and blokk != '\n': #{
 #	print('# ord: %d ||| %d/%d' % (ord, len(rdep.findall(blokk)), blokk.count('\t"')));
