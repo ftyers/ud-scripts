@@ -99,7 +99,9 @@ for line in sf.readlines(): #{
 symbs.sort(); 
 
 # Process a CoNLL-U file from stdin
-for line in sys.stdin.readlines(): #{
+#for line in sys.stdin.readlines(): #{
+line = sys.stdin.readline()
+while line: #{
 
 	if line.count('\t') == 9: #{
 		row = line.strip('\n').split('\t');
@@ -128,4 +130,5 @@ for line in sys.stdin.readlines(): #{
 	else: #{
 		sys.stdout.write(line);
 	#}
+	line = sys.stdin.readline()
 #}
