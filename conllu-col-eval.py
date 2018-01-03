@@ -21,6 +21,10 @@ while True: #{
 		continue;
 	#}
 
+	if ref_l[0] == '#' and tst_l[0] == '#':#{
+		continue;
+	#}
+
 	ref_r = ref_l.split('\t');
 	tst_r = tst_l.split('\t');
 
