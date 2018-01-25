@@ -7,6 +7,10 @@ import sys;
 def plain_tekst(blokk): #{
 	tekst = '';
 	for line in blokk.split('\n'): #{
+		if line.strip() == '':
+			continue
+		if line[0] == '#':
+			continue
 		row = line.split('\t');
 		tekst = tekst + row[1] + ' ' ;	
 	#}
@@ -183,6 +187,9 @@ for blokk in sys.stdin.read().split('\n\n'): #{
 	tekst = plain_tekst(blokk);
 #	print('# text = %s' % (tekst));
 	for line in blokk.split('\n'): #{
+		if line[0] == '#':
+			print(line.strip())
+			continue
 		row = line.split('\t');
 		morfres = [];
 
