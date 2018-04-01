@@ -35,10 +35,13 @@ def main():
                 lp = p + len(tok)
                 #fd.write('%d\t%d\t%s\n'%(p,lp,txt[lp:].encode('utf-8')))
                 if lp<len(txt) and not re.match('^\s',txt[lp:]):
-                    if fields[9] == '':
+                    if fields[9] == '' or fields[9] == '_':
                         fields[9] = 'SpaceAfter=No'
                     else: 
                         fields[9] += '|SpaceAfter=No'
+        else:
+            fd.write('%s\n'%l.encode('utf-8'))
+            continue
         l = '\t'.join(fields)
         fd.write('%s\n'%l.encode('utf-8'))
 
