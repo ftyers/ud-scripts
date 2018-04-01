@@ -48,6 +48,7 @@ class tree():
 	self.src = txt
 	self.nodes = {}
 	self.parchild = {}
+        self.translations = []
 	for l in txt.split('\n'):
 	    l = l.strip()
 	    if not l: continue
@@ -55,6 +56,10 @@ class tree():
 		self.sid = l
 	    elif l.startswith(txtmark):
 		self.text = l
+	    elif l.startswith('# labels ='):
+		self.labels = l
+	    elif l.startswith('# text['):
+		self.translations.append(l)
 	    else:
 		n = node_from_text(l)
 		if n:
@@ -84,8 +89,10 @@ class tree():
     
     def __repr__(self):
 	ret = [self.sid,self.text]
+        for i in self.translations: ret.append(i)
+        ret.append(self.labels)
 	for nid,node in sorted(self.nodes.iteritems()):
-	    ret.append(unicode(node))
+            ret.append(unicode(node))
 	ret = u'\n'.join(ret)
 	return ret.encode('utf-8')
 
