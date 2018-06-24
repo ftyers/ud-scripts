@@ -49,6 +49,7 @@ class tree():
 	self.nodes = {}
 	self.parchild = {}
         self.translations = []
+        self.labels = '# labels = '
 	for l in txt.split('\n'):
 	    l = l.strip()
 	    if not l: continue

@@ -24,12 +24,11 @@ def _input(buffer): #{
 			name = row[7]
 			src = int(row[6])
 			dst = int(row[0])
-			weight = 1.0
 			t = (src,dst)
 			if t in weights: #{
-				weights[t] -= weight;
+				weights[t] -= 1.0;
 			else: #{
-				weights[t] = weight;
+				weights[t] = 0.0;
 			#}
 			names[t] = name;
 			nodes[dst] = row[1:6];
@@ -217,6 +216,7 @@ if __name__ == "__main__": #{
 	#}
 
 	buffer = {};
+	tree_number = 1
 	while True: #{
 			
 		for f in fds: #{
@@ -255,23 +255,41 @@ if __name__ == "__main__": #{
 				heads[t] = s;
 			#}
 		#}
+
+		x = list(nodes.keys())
+		x.sort()
+
+		skip = False
+		i = 1 
+		for t in x:
+			if t != i:
+				print('[',tree_number,'] ERROR: incomplete tree, ', x, file=sys.stderr)
+				skip = True		
+			i += 1
 	
-		for t in nodes: #{
-			ord = nodes[t][0];
-			lem = nodes[t][1];
-			upos = nodes[t][2];
-			xpos = nodes[t][3];
-			mor = nodes[t][4];
-			deprel = names[(heads[t], t)];
-			misc = '_';
-			misc = 'ArcWeight=' + str(weights[(heads[t], t)]);
-			#     idx sur lem  up  xp mor hed dep deps mis
-			#      0   1   2   3   4  5    6   7   8    9  
-			print('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (t, ord, lem, upos, xpos, mor, heads[t], deprel, '_', misc));
-		#}	
-		print('');
+		if not skip:
+			for t in x: #{
+				ord = nodes[t][0];
+				lem = nodes[t][1];
+				upos = nodes[t][2];
+				xpos = nodes[t][3];
+				mor = nodes[t][4];
+				deprel = 'dep'
+				misc = '_';
+				head = 0
+				if t in heads and (heads[t], t) in names:
+					deprel = names[(heads[t], t)];
+					misc = 'ArcWeight=' + str(weights[(heads[t], t)]);
+					head = heads[t]
+	
+				#     idx sur lem  up  xp mor hed dep deps mis
+				#      0   1   2   3   4  5    6   7   8    9  
+				print('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (t, ord, lem, upos, xpos, mor, head, deprel, '_', misc));
+			#}	
+			print('');
 	
 		buffer = {};
+		tree_number += 1
 	#}
 #}
 
