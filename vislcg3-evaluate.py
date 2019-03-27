@@ -1,3 +1,8 @@
+"""
+Todo:
+	- Subreadings
+	- Per rule statistics
+"""
 import sys, re
 
 r_wordform = re.compile('^"<[^>]+>"$')
