@@ -18,6 +18,7 @@ f_ref = open(sys.argv[2])
 f_tst = open(sys.argv[3])
 
 tokens = {}
+decisions = {}
 idx = 0
 n_analyses_src = 0
 n_analyses_ref = 0
@@ -65,14 +66,22 @@ for line in f_tst.readlines():
 			rule_match = r_rule.search(analysis)
 			analysis = analysis[1:rule_match.start()].strip()
 			rules = rule_match.group().strip()
+			for rule in rules.split(' '):
+				if rule not in decisions:
+					decisions[rule] = [0,0,0,0] 	# n_tp, n_fp, n_tn, n_fn
+
 			if analysis in tokens[idx][1]:
 				# If the rule has deleted a reading that is found in the reference
 				if tokens[idx][1][analysis] == True:
 					n_fp += 1
 					errors.append((idx, analysis, tokens[idx][1], rules))
+					for rule in rules.split(' '):
+						decisions[rule][1] += 1
 				# If the rule has deleted a reading that is not found in the reference
 				elif tokens[idx][1][analysis] == False:
 					n_tp += 1
+					for rule in rules.split(' '):
+						decisions[rule][0] += 1
 		else:
 			n_analyses_tst += 1			
 			if analysis in tokens[idx][1]:
@@ -93,6 +102,12 @@ print('Errors:')
 print()
 for error in errors:
 	print(error[0], '|', error[1], '|', error[2])
+print()
+print('Decisions:')
+print()
+print('\t\tTP\tFP\tTN\tFN')
+for rule in decisions:
+	print(rule, '\t' + '\t'.join([str(i) for i in decisions[rule]]))
 print()
 print('--------------------------------------------------------------------------------')
 print('Input analyses:', n_analyses_src)
