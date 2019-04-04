@@ -1,6 +1,7 @@
 import sys 
 
-MIN_ANALYSIS_FREQ = 5 
+# Change this if the corpus is really big
+MIN_ANALYSIS_FREQ = 1
 
 dico = {}
 
